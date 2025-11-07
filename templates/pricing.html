@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Pricing - CompliancePro360{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+                        <i data-lucide="check-square" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <span class="text-2xl font-bold text-gray-900">CompliancePro360</span>
+                </div>
+                <div class="flex gap-4">
+                    <a href="/activate" class="text-gray-600 hover:text-gray-900">Activate License</a>
+                    <a href="/login" class="btn btn-secondary">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center mb-16">
+            <h1 class="text-5xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h1>
+            <p class="text-xl text-gray-600">
+                Choose the plan that fits your practice. Fixed monthly fee + per-company charges.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {% for plan_id, plan in plans.items() %}
+            {% if plan_id != 'trial' %}
+            <div class="bg-white rounded-2xl shadow-xl p-8 {% if plan_id == 'professional' %}ring-2 ring-blue-600 transform scale-105{% endif %}">
+                {% if plan_id == 'professional' %}
+                <div class="bg-blue-600 text-white text-sm font-semibold px-4 py-1 rounded-full inline-block mb-4">
+                    MOST POPULAR
+                </div>
+                {% endif %}
+                
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ plan.name }}</h3>
+                
+                <div class="mb-6">
+                    <div class="flex items-baseline gap-2">
+                        <span class="text-4xl font-bold text-gray-900">₹{{ "{:,}".format(plan.monthly_fee) }}</span>
+                        <span class="text-gray-600">/month</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">
+                        + ₹{{ plan.adhoc_per_company }}/company adhoc charge
+                    </p>
+                    {% if plan.setup_fee > 0 %}
+                    <p class="text-sm text-orange-600 font-medium mt-1">
+                        One-time setup: ₹{{ "{:,}".format(plan.setup_fee) }}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div class="space-y-3 mb-8">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-green-600"></i>
+                        <span class="text-gray-700">Up to {{ plan.max_companies }} companies</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-green-600"></i>
+                        <span class="text-gray-700">{{ plan.max_clients }} client users</span>
+                    </div>
+                    {% for feature in plan.features %}
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-5 h-5 text-green-600"></i>
+                        <span class="text-gray-700">{{ feature.replace('_', ' ').title() }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <a href="/purchase/{{ plan_id }}" 
+                   class="block w-full btn {% if plan_id == 'professional' %}btn-primary{% else %}btn-secondary{% endif %} text-center py-3">
+                    Get Started
+                </a>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Trial Banner -->
+        <div class="mt-16 bg-blue-50 border-2 border-blue-200 rounded-2xl p-8 max-w-3xl mx-auto">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Free 15-Day Trial</h3>
+                    <p class="text-gray-600">
+                        Test all features with up to 5 companies before committing.
+                    </p>
+                </div>
+                <a href="/register" class="btn btn-primary px-8 py-3 whitespace-nowrap">
+                    Start Free Trial
+                </a>
+            </div>
+        </div>
+
+        <!-- Features Comparison -->
+        <div class="mt-20">
+            <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">What's Included</h2>
+            <div class="bg-white rounded-2xl shadow-lg p-8 max-w-4xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="brain" class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">AI Automation</h4>
+                            <p class="text-sm text-gray-600">LLM interprets government notifications automatically</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="database" class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Auto Data Fetch</h4>
+                            <p class="text-sm text-gray-600">Scrapes MCA, GST, IT portals for company data</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="calendar-check" class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Dynamic Calendars</h4>
+                            <p class="text-sm text-gray-600">Self-updating compliance schedules</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="alert-triangle" class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Risk Prediction</h4>
+                            <p class="text-sm text-gray-600">ML predicts filing delays before they happen</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="users" class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Client Portal</h4>
+                            <p class="text-sm text-gray-600">Share access links with your clients</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-blue-600 flex-shrink-0 mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold text-gray-900">Enterprise Security</h4>
+                            <p class="text-sm text-gray-600">Multi-tenant isolation with complete audit trails</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-gray-200 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2025 CompliancePro360. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Invite Client - CompliancePro360{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 p-6">
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-6">
+            <a href="/dashboard" class="text-blue-600 hover:text-blue-700">← Back to Dashboard</a>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Invite Client</h1>
+            <p class="text-gray-600 mb-6">Share access with your clients so they can view their compliance status</p>
+
+            <form id="inviteForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Client Name *</label>
+                    <input type="text" id="client_name" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="John Doe">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Client Email *</label>
+                    <input type="email" id="client_email" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="client@example.com">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input type="tel" id="client_phone"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="+91 98765 43210">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                    <input type="text" id="company_name"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Client's Company">
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p class="text-sm text-blue-800">
+                        <strong>Current Plan:</strong> {{ license.license_type if license else 'Unknown' }}<br>
+                        <strong>Clients:</strong> {{ license.clients_count if license else 0 }} / {{ license.max_clients if license else 0 }}
+                    </p>
+                </div>
+
+                <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+                <div id="success-message" class="hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm"></div>
+
+                <button type="submit" class="w-full btn btn-primary py-3 text-lg">
+                    Send Invitation
+                </button>
+            </form>
+        </div>
+
+        <div class="mt-6 bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Your Shareable Link</h2>
+            <p class="text-sm text-gray-600 mb-3">Share this link directly with clients:</p>
+            <div class="flex gap-2">
+                <input type="text" id="shareable-link" readonly
+                    value="{{ license.shareable_link if license else 'Not available' }}"
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50">
+                <button onclick="copyLink()" class="btn btn-secondary">
+                    Copy
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('inviteForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = {
+        client_name: document.getElementById('client_name').value,
+        client_email: document.getElementById('client_email').value,
+        client_phone: document.getElementById('client_phone').value,
+        company_name: document.getElementById('company_name').value
+    };
+    
+    const errorDiv = document.getElementById('error-message');
+    const successDiv = document.getElementById('success-message');
+    errorDiv.classList.add('hidden');
+    successDiv.classList.add('hidden');
+    
+    try {
+        const response = await fetch('/invite-client', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            successDiv.innerHTML = `
+                <p class="font-semibold">Invitation sent successfully!</p>
+                <p class="text-sm mt-1">Invitation link: <a href="${data.invitation_link}" class="underline">${data.invitation_link}</a></p>
+            `;
+            successDiv.classList.remove('hidden');
+            document.getElementById('inviteForm').reset();
+        } else {
+            errorDiv.textContent = data.error || 'Failed to send invitation';
+            errorDiv.classList.remove('hidden');
+        }
+    } catch (error) {
+        errorDiv.textContent = 'An error occurred. Please try again.';
+        errorDiv.classList.remove('hidden');
+    }
+});
+
+function copyLink() {
+    const link = document.getElementById('shareable-link');
+    link.select();
+    document.execCommand('copy');
+    alert('Link copied to clipboard!');
+}
+</script>
+{% endblock %}

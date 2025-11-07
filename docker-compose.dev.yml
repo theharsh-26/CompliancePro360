@@ -1,0 +1,58 @@
+version: '3.8'
+
+# Development overrides for docker-compose.yml
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  # API with hot reload enabled
+  api:
+    volumes:
+      - ./app:/app/app  # Enable code hot-reload
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      - APP_ENV=development
+
+  # Frontend with hot reload
+  frontend:
+    volumes:
+      - ./templates:/app/templates
+      - ./static:/app/static
+      - ./app_production.py:/app/app_production.py
+      - ./logs:/app/logs
+    environment:
+      - APP_ENV=development
+    command: python app_production.py
+
+  # Celery worker with auto-reload
+  celery_worker:
+    volumes:
+      - ./app:/app/app
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    environment:
+      - APP_ENV=development
+
+  # Celery beat with auto-reload
+  celery_beat:
+    volumes:
+      - ./app:/app/app
+      - ./logs:/app/logs
+    environment:
+      - APP_ENV=development
+
+  # Expose database port for local tools
+  postgres:
+    ports:
+      - "5432:5432"
+
+  # Expose Redis port for local tools
+  redis:
+    ports:
+      - "6379:6379"
+
+  # Disable NGINX in development (access services directly)
+  nginx:
+    profiles:
+      - production  # This service won't start unless 'production' profile is active

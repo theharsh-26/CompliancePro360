@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CompliancePro360{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-50">
+    <!-- Sidebar -->
+    <div class="w-64 bg-white border-r border-gray-200 flex flex-col">
+        <!-- Logo -->
+        <div class="h-16 flex items-center px-6 border-b border-gray-200">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+                    <i data-lucide="check-square" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-900">CompliancePro360</h1>
+                    <p class="text-xs text-gray-500">AI-Powered</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+            <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-50 text-blue-700 font-medium">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                Dashboard
+            </a>
+            <a href="/companies" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+                <i data-lucide="building-2" class="w-5 h-5"></i>
+                Companies
+            </a>
+            <a href="/compliance" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+                <i data-lucide="check-square" class="w-5 h-5"></i>
+                Compliance Tasks
+            </a>
+            <a href="/calendar" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+                <i data-lucide="calendar" class="w-5 h-5"></i>
+                Calendar
+            </a>
+            <a href="/analytics" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                Analytics
+            </a>
+            <a href="/settings" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+                <i data-lucide="settings" class="w-5 h-5"></i>
+                Settings
+            </a>
+        </nav>
+
+        <!-- User Profile -->
+        <div class="border-t border-gray-200 p-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center text-white font-semibold">
+                    {{ user.first_name[0] if user else 'U' }}{{ user.last_name[0] if user else 'S' }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                        {{ user.first_name if user else 'User' }} {{ user.last_name if user else '' }}
+                    </p>
+                    <p class="text-xs text-gray-500 truncate">
+                        {{ user.email if user else 'user@example.com' }}
+                    </p>
+                </div>
+                <a href="/logout" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+            <div class="flex items-center gap-4 flex-1">
+                <div class="relative max-w-md w-full">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                    <input
+                        type="text"
+                        placeholder="Search companies, tasks, documents..."
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button class="relative p-2 hover:bg-gray-100 rounded-lg">
+                    <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                    <span class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">5</span>
+                </button>
+                <button class="btn btn-primary">
+                    + Add Company
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="space-y-6">
+                <!-- Header -->
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+                    <p class="text-gray-600 mt-1">Welcome back! Here's your compliance overview.</p>
+                </div>
+
+                <!-- Stats Grid -->
+                <div id="stats-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Stats will be loaded here -->
+                </div>
+
+                <!-- Compliance Score -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Average Compliance Score</h2>
+                    <div class="flex items-center gap-6">
+                        <div class="relative w-32 h-32">
+                            <svg class="w-full h-full transform -rotate-90">
+                                <circle cx="64" cy="64" r="56" stroke="#e5e7eb" stroke-width="12" fill="none" />
+                                <circle id="score-circle" cx="64" cy="64" r="56" stroke="#3b82f6" stroke-width="12" fill="none" stroke-linecap="round" />
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span id="score-value" class="text-3xl font-bold text-gray-900">0%</span>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-gray-600">
+                                Your companies are maintaining a good compliance score. Keep up the excellent work!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Tasks & Upcoming Deadlines -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recent Tasks -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">Recent Tasks</h2>
+                        <div id="recent-tasks" class="space-y-3">
+                            <!-- Tasks will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Deadlines -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">Upcoming Deadlines</h2>
+                        <div id="upcoming-deadlines" class="space-y-3">
+                            <!-- Deadlines will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Load dashboard data
+    async function loadDashboard() {
+        try {
+            const response = await fetch('/api/dashboard/stats');
+            const data = await response.json();
+            
+            // Update stats
+            const statsGrid = document.getElementById('stats-grid');
+            statsGrid.innerHTML = `
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Companies</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">${data.totalCompanies}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <i data-lucide="building-2" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Pending Tasks</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">${data.pendingTasks}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
+                            <i data-lucide="clock" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Completed Tasks</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">${data.completedTasks}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                            <i data-lucide="check-circle-2" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Overdue Tasks</p>
+                            <p class="text-3xl font-bold text-gray-900 mt-2">${data.overdueTasks}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center">
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Update compliance score
+            const score = data.averageComplianceScore;
+            document.getElementById('score-value').textContent = score + '%';
+            const circle = document.getElementById('score-circle');
+            const circumference = 2 * Math.PI * 56;
+            const offset = circumference * (1 - score / 100);
+            circle.style.strokeDasharray = circumference;
+            circle.style.strokeDashoffset = offset;
+            
+            // Update recent tasks
+            const recentTasks = document.getElementById('recent-tasks');
+            recentTasks.innerHTML = data.recentTasks.map(task => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">${task.task}</p>
+                        <p class="text-sm text-gray-600">${task.company}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-600">${task.dueDate}</p>
+                        <span class="badge badge-${task.status === 'completed' ? 'success' : 'warning'}">${task.status}</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Update upcoming deadlines
+            const upcomingDeadlines = document.getElementById('upcoming-deadlines');
+            upcomingDeadlines.innerHTML = data.upcomingDeadlines.map(deadline => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex-1">
+                        <p class="font-medium text-gray-900">${deadline.task}</p>
+                        <p class="text-sm text-gray-600">${deadline.companies} companies</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-gray-900">${deadline.daysLeft} days left</p>
+                        <p class="text-xs text-gray-600">${deadline.dueDate}</p>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Reinitialize icons
+            lucide.createIcons();
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+        }
+    }
+    
+    // Load dashboard on page load
+    loadDashboard();
+</script>
+{% endblock %}

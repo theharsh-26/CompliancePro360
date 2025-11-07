@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}My License - CompliancePro360{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 p-6">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6">
+            <a href="/dashboard" class="text-blue-600 hover:text-blue-700">← Back to Dashboard</a>
+        </div>
+
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">My License & Billing</h1>
+
+        <!-- License Details -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">{{ license.license_type if license else 'Trial' }} Plan</h2>
+                    <p class="text-gray-600 mt-1">License Key: {{ license.license_key if license else 'N/A' }}</p>
+                </div>
+                <span class="px-4 py-2 rounded-full text-sm font-semibold {{ 'bg-green-100 text-green-800' if license.is_valid else 'bg-red-100 text-red-800' }}">
+                    {{ 'Active' if license.is_valid else 'Inactive' }}
+                </span>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                <div>
+                    <p class="text-sm text-gray-600">Monthly Fee</p>
+                    <p class="text-2xl font-bold text-gray-900">₹{{ "{:,}".format(license.monthly_fee|int) if license else '0' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Companies</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ license.companies_count if license else 0 }} / {{ license.max_companies if license else 0 }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Clients</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ license.clients_count if license else 0 }} / {{ license.max_clients if license else 0 }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Per Company</p>
+                    <p class="text-2xl font-bold text-gray-900">₹{{ license.adhoc_rate_per_company|int if license else 0 }}</p>
+                </div>
+            </div>
+
+            <div class="border-t pt-6">
+                <h3 class="font-semibold text-gray-900 mb-3">Current Month Bill</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Fixed Monthly Fee</span>
+                        <span class="font-medium">₹{{ "{:,}".format(license.monthly_fee|int) if license else '0' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Adhoc ({{ license.companies_count if license else 0 }} companies × ₹{{ license.adhoc_rate_per_company|int if license else 0 }})</span>
+                        <span class="font-medium">₹{{ "{:,}".format((license.companies_count * license.adhoc_rate_per_company)|int) if license else '0' }}</span>
+                    </div>
+                    <div class="flex justify-between text-lg font-bold pt-2 border-t">
+                        <span>Total</span>
+                        <span class="text-blue-600">₹{{ "{:,}".format((license.monthly_fee + (license.companies_count * license.adhoc_rate_per_company))|int) if license else '0' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 flex gap-3">
+                <button class="btn btn-primary">Upgrade Plan</button>
+                <button class="btn btn-secondary">Download Invoice</button>
+            </div>
+        </div>
+
+        <!-- Shareable Link -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Your Shareable Link</h2>
+            <p class="text-gray-600 mb-4">Share this link with your clients to give them access:</p>
+            <div class="flex gap-2">
+                <input type="text" readonly
+                    value="{{ shareable_link if shareable_link else 'Not available' }}"
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm">
+                <button onclick="copyLink()" class="btn btn-secondary">
+                    Copy Link
+                </button>
+            </div>
+        </div>
+
+        <!-- Invoices -->
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Recent Invoices</h2>
+            {% if invoices %}
+            <div class="space-y-3">
+                {% for invoice in invoices %}
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                        <p class="font-medium text-gray-900">{{ invoice.invoice_number }}</p>
+                        <p class="text-sm text-gray-600">{{ invoice.invoice_date }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-gray-900">₹{{ "{:,}".format(invoice.total_amount|int) }}</p>
+                        <span class="text-sm px-2 py-1 rounded-full {{ 'bg-green-100 text-green-800' if invoice.payment_status == 'paid' else 'bg-orange-100 text-orange-800' }}">
+                            {{ invoice.payment_status }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-600">No invoices yet</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function copyLink() {
+    const text = "{{ shareable_link if shareable_link else '' }}";
+    navigator.clipboard.writeText(text);
+    alert('Link copied to clipboard!');
+}
+</script>
+{% endblock %}

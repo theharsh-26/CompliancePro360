@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CompliancePro360{% endblock %}
+
+{% block content %}
+<div class="flex h-screen bg-gray-50">
+    <!-- Sidebar -->
+    <div class="w-64 bg-white border-r border-gray-200 flex flex-col">
+        <div class="h-16 flex items-center px-6 border-b border-gray-200">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+                    <i data-lucide="check-square" class="w-5 h-5 text-white"></i>
+                </div>
+                <span class="text-lg font-bold text-gray-900">CompliancePro360</span>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+            <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-50 text-blue-700 font-medium">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                Dashboard
+            </a>
+            <a href="/companies" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+                <i data-lucide="building-2" class="w-5 h-5"></i>
+                Companies
+            </a>
+            <a href="/compliance" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+                <i data-lucide="check-square" class="w-5 h-5"></i>
+                Compliance
+            </a>
+            <a href="/my-license" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+                <i data-lucide="key" class="w-5 h-5"></i>
+                My License
+            </a>
+            <a href="/invite-client" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+                <i data-lucide="user-plus" class="w-5 h-5"></i>
+                Invite Client
+            </a>
+        </nav>
+
+        <div class="border-t border-gray-200 p-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center text-white font-semibold">
+                    {{ user.first_name[0] if user else 'U' }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ user.first_name if user else 'User' }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ license.license_type if license else 'Trial' }}</p>
+                </div>
+                <a href="/logout" class="text-gray-400 hover:text-gray-600">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+            <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+            <button class="btn btn-primary">
+                + Add Company
+            </button>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6">
+            <div id="stats-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <!-- Stats will be loaded here -->
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <a href="/companies" class="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition">
+                        <i data-lucide="building-2" class="w-8 h-8 text-blue-600 mb-2"></i>
+                        <h3 class="font-semibold text-gray-900">Add Company</h3>
+                        <p class="text-sm text-gray-600">Manage compliance for new company</p>
+                    </a>
+                    <a href="/invite-client" class="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition">
+                        <i data-lucide="user-plus" class="w-8 h-8 text-green-600 mb-2"></i>
+                        <h3 class="font-semibold text-gray-900">Invite Client</h3>
+                        <p class="text-sm text-gray-600">Share access with your clients</p>
+                    </a>
+                    <a href="/my-license" class="p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition">
+                        <i data-lucide="credit-card" class="w-8 h-8 text-purple-600 mb-2"></i>
+                        <h3 class="font-semibold text-gray-900">View Billing</h3>
+                        <p class="text-sm text-gray-600">Check invoices and payments</p>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+async function loadDashboard() {
+    try {
+        const response = await fetch('/api/dashboard/stats');
+        const data = await response.json();
+        
+        document.getElementById('stats-grid').innerHTML = `
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Companies</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">${data.totalCompanies}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="building-2" class="w-6 h-6 text-white"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Pending Tasks</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">${data.pendingTasks}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
+                        <i data-lucide="clock" class="w-6 h-6 text-white"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">License Plan</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-2">${data.licensePlan}</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Monthly Bill</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-2">₹${data.monthlyBill}</p>
+                </div>
+            </div>
+        `;
+        lucide.createIcons();
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
+}
+
+loadDashboard();
+</script>
+{% endblock %}

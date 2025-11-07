@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}CompliancePro360 - AI-Powered Compliance Management{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+                        <i data-lucide="check-square" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <span class="text-2xl font-bold text-gray-900">CompliancePro360</span>
+                </div>
+                <div class="flex gap-4">
+                    <a href="/login" class="btn btn-secondary">Login</a>
+                    <a href="/register" class="btn btn-primary">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="text-center">
+            <h1 class="text-5xl font-bold text-gray-900 mb-6">
+                AI-Powered Compliance Management<br>
+                <span class="text-blue-600">for Indian Chartered Accountants</span>
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                Automate GST, Income Tax, MCA, PF, ESI & PT compliance with intelligent AI/ML. 
+                Never miss a deadline again.
+            </p>
+            <div class="flex gap-4 justify-center">
+                <a href="/register" class="btn btn-primary text-lg px-8 py-3">
+                    Start Free Trial
+                </a>
+                <a href="/login" class="btn btn-secondary text-lg px-8 py-3">
+                    Login to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid md:grid-cols-3 gap-8 mt-20">
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                    <i data-lucide="brain" class="w-6 h-6 text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">AI-Powered Intelligence</h3>
+                <p class="text-gray-600">
+                    LLM automatically interprets government notifications and updates compliance schedules in real-time.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                    <i data-lucide="calendar-check" class="w-6 h-6 text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Dynamic Calendars</h3>
+                <p class="text-gray-600">
+                    Auto-generated compliance calendars that adapt to government changes without manual intervention.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                    <i data-lucide="database" class="w-6 h-6 text-purple-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Auto Data Fetch</h3>
+                <p class="text-gray-600">
+                    Automatically fetch and validate company data from MCA, GST, and Income Tax portals.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                    <i data-lucide="alert-triangle" class="w-6 h-6 text-orange-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Risk Prediction</h3>
+                <p class="text-gray-600">
+                    ML-based risk analysis predicts filing delays before they happen with actionable recommendations.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+                    <i data-lucide="shield-check" class="w-6 h-6 text-red-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Multi-Tenant Security</h3>
+                <p class="text-gray-600">
+                    Enterprise-grade security with complete data isolation, RBAC, and comprehensive audit trails.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-lg">
+                <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                    <i data-lucide="bar-chart-3" class="w-6 h-6 text-indigo-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Advanced Analytics</h3>
+                <p class="text-gray-600">
+                    Real-time dashboards with compliance scores, trends, and insights to optimize your practice.
+                </p>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid md:grid-cols-4 gap-6 mt-20">
+            <div class="bg-white rounded-xl p-6 text-center shadow-lg">
+                <div class="text-4xl font-bold text-blue-600 mb-2">1000+</div>
+                <div class="text-gray-600">CA Firms</div>
+            </div>
+            <div class="bg-white rounded-xl p-6 text-center shadow-lg">
+                <div class="text-4xl font-bold text-green-600 mb-2">50,000+</div>
+                <div class="text-gray-600">Companies Managed</div>
+            </div>
+            <div class="bg-white rounded-xl p-6 text-center shadow-lg">
+                <div class="text-4xl font-bold text-purple-600 mb-2">1M+</div>
+                <div class="text-gray-600">Tasks Tracked</div>
+            </div>
+            <div class="bg-white rounded-xl p-6 text-center shadow-lg">
+                <div class="text-4xl font-bold text-orange-600 mb-2">99.9%</div>
+                <div class="text-gray-600">Uptime</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-600">
+                <p>&copy; 2025 CompliancePro360. Built with ❤️ for Indian Chartered Accountants.</p>
+                <p class="mt-2">Head Developer: Harsh Pandey</p>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}

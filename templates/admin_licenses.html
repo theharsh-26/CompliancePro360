@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Licenses{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 p-6">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-6">License Management</h1>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="space-y-4">
+                {% if licenses %}
+                {% for license in licenses %}
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold">{{ license.practitioner_name }}</h3>
+                            <p class="text-sm text-gray-600">{{ license.license_key }}</p>
+                        </div>
+                        <span class="badge badge-{{ 'success' if license.status == 'active' else 'warning' }}">
+                            {{ license.status }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-gray-600">No licenses found</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

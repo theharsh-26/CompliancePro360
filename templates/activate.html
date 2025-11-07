@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Activate License - CompliancePro360{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div class="max-w-md w-full">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+                    <i data-lucide="key" class="w-7 h-7 text-white"></i>
+                </div>
+                <span class="text-3xl font-bold text-gray-900">Activate License</span>
+            </div>
+            <p class="text-gray-600">Enter your license key to get started</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-xl p-8">
+            <form id="activateForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">License Key *</label>
+                    <input 
+                        type="text" 
+                        id="license_key" 
+                        required
+                        placeholder="CP360-XXXX-XXXX-XXXX-XXXX"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-center text-lg"
+                        maxlength="29"
+                    >
+                    <p class="text-xs text-gray-500 mt-2">
+                        Check your email for the license key
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="your@email.com"
+                    >
+                    <p class="text-xs text-gray-500 mt-1">
+                        Must match the email used during purchase
+                    </p>
+                </div>
+
+                <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+                <div id="success-message" class="hidden bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm"></div>
+
+                <button 
+                    type="submit" 
+                    class="w-full btn btn-primary py-3 text-lg"
+                >
+                    Activate License
+                </button>
+            </form>
+
+            <div class="mt-6 space-y-4">
+                <div class="text-center text-sm text-gray-600">
+                    <p>Don't have a license key?</p>
+                    <a href="/pricing" class="text-blue-600 hover:text-blue-700 font-medium">View Pricing Plans</a>
+                </div>
+
+                <div class="border-t pt-4">
+                    <p class="text-xs text-gray-500 text-center">
+                        Need help? Contact us at <a href="mailto:support@compliancepro360.com" class="text-blue-600">support@compliancepro360.com</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h3 class="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                <i data-lucide="info" class="w-5 h-5 text-blue-600"></i>
+                What happens after activation?
+            </h3>
+            <ul class="text-sm text-gray-700 space-y-1 ml-7">
+                <li>✓ Instant access to your dashboard</li>
+                <li>✓ Unique shareable link for your clients</li>
+                <li>✓ Add companies and start managing compliance</li>
+                <li>✓ Access to all plan features</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Format license key input
+    document.getElementById('license_key').addEventListener('input', (e) => {
+        let value = e.target.value.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+        let formatted = '';
+        
+        for (let i = 0; i < value.length && i < 24; i++) {
+            if (i > 0 && i % 4 === 0) {
+                formatted += '-';
+            }
+            formatted += value[i];
+        }
+        
+        e.target.value = formatted;
+    });
+
+    document.getElementById('activateForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const license_key = document.getElementById('license_key').value.replace(/-/g, '');
+        const email = document.getElementById('email').value;
+        
+        const errorDiv = document.getElementById('error-message');
+        const successDiv = document.getElementById('success-message');
+        errorDiv.classList.add('hidden');
+        successDiv.classList.add('hidden');
+        
+        try {
+            const response = await fetch('/activate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ license_key, email })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                successDiv.textContent = 'License activated successfully! Redirecting...';
+                successDiv.classList.remove('hidden');
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1500);
+            } else {
+                errorDiv.textContent = data.error || 'Invalid license key or email. Please check and try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        } catch (error) {
+            errorDiv.textContent = 'An error occurred. Please try again or contact support.';
+            errorDiv.classList.remove('hidden');
+        }
+    });
+</script>
+{% endblock %}

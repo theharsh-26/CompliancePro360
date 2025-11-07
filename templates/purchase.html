@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase {{ plan.name }} - CompliancePro360{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white">
+                <h1 class="text-3xl font-bold mb-2">Purchase {{ plan.name }} Plan</h1>
+                <p class="text-blue-100">Complete your purchase to receive your license key</p>
+            </div>
+
+            <div class="p-8">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Left: Order Summary -->
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+                        
+                        <div class="bg-gray-50 rounded-lg p-6 space-y-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Plan</span>
+                                <span class="font-semibold">{{ plan.name }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Monthly Fee</span>
+                                <span class="font-semibold">₹{{ "{:,}".format(plan.monthly_fee) }}</span>
+                            </div>
+                            {% if plan.setup_fee > 0 %}
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Setup Fee (One-time)</span>
+                                <span class="font-semibold">₹{{ "{:,}".format(plan.setup_fee) }}</span>
+                            </div>
+                            {% endif %}
+                            <div class="flex justify-between text-sm text-gray-600">
+                                <span>Per Company Charge</span>
+                                <span>₹{{ plan.adhoc_per_company }}</span>
+                            </div>
+                            <div class="border-t pt-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-lg font-bold">First Month Total</span>
+                                    <span class="text-2xl font-bold text-blue-600">
+                                        ₹{{ "{:,}".format(plan.monthly_fee + plan.get('setup_fee', 0)) }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 space-y-3">
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5"></i>
+                                <span class="text-sm text-gray-600">{{ plan.max_companies }} companies included</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5"></i>
+                                <span class="text-sm text-gray-600">{{ plan.max_clients }} client users</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5"></i>
+                                <span class="text-sm text-gray-600">All {{ plan.name }} features included</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Purchase Form -->
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900 mb-6">Your Details</h2>
+                        
+                        <form id="purchaseForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">CA Firm Name *</label>
+                                <input type="text" id="firm_name" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                                    <input type="text" id="first_name" required
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                                    <input type="text" id="last_name" required
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                                <input type="email" id="email" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <p class="text-xs text-gray-500 mt-1">License key will be sent to this email</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                                <input type="tel" id="phone" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <h3 class="font-semibold text-gray-900 mb-2">Payment Method</h3>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2">
+                                        <input type="radio" name="payment" value="razorpay" checked
+                                            class="w-4 h-4 text-blue-600">
+                                        <span class="text-sm">Razorpay (UPI, Cards, Net Banking)</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="radio" name="payment" value="bank_transfer"
+                                            class="w-4 h-4 text-blue-600">
+                                        <span class="text-sm">Direct Bank Transfer</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-2">
+                                <input type="checkbox" id="terms" required class="mt-1">
+                                <label for="terms" class="text-sm text-gray-600">
+                                    I agree to the <a href="#" class="text-blue-600 hover:underline">Terms of Service</a> 
+                                    and <a href="#" class="text-blue-600 hover:underline">Privacy Policy</a>
+                                </label>
+                            </div>
+
+                            <div id="error-message" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+
+                            <button type="submit" class="w-full btn btn-primary py-3 text-lg">
+                                Complete Purchase - ₹{{ "{:,}".format(plan.monthly_fee + plan.get('setup_fee', 0)) }}
+                            </button>
+                        </form>
+
+                        <p class="text-center text-sm text-gray-500 mt-4">
+                            🔒 Secure payment processing. Your data is encrypted.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="/pricing" class="text-blue-600 hover:text-blue-700">← Back to Pricing</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('purchaseForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {
+            plan_type: '{{ plan_type }}',
+            firm_name: document.getElementById('firm_name').value,
+            first_name: document.getElementById('first_name').value,
+            last_name: document.getElementById('last_name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            payment_method: document.querySelector('input[name="payment"]:checked').value
+        };
+        
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.classList.add('hidden');
+        
+        try {
+            // Simulate purchase - in production, integrate with Razorpay/Stripe
+            const response = await fetch('/api/purchase', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Show success message with license key
+                alert(`Purchase Successful!\n\nYour License Key: ${data.license_key}\n\nAn email has been sent to ${formData.email} with your license key and activation instructions.`);
+                window.location.href = '/activate';
+            } else {
+                errorDiv.textContent = data.error || 'Purchase failed. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        } catch (error) {
+            errorDiv.textContent = 'An error occurred. Please contact support.';
+            errorDiv.classList.remove('hidden');
+        }
+    });
+</script>
+{% endblock %}
