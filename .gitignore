@@ -1,4 +1,6 @@
-# Python
+# =========================================
+# PYTHON BACKEND
+# =========================================
 __pycache__/
 *.py[cod]
 *$py.class
@@ -20,58 +22,125 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
+# =========================================
+# VIRTUAL ENVIRONMENTS
+# =========================================
 venv/
 ENV/
 env/
-.venv
+.venv/
+env.bak/
+python_env/
 
-# Environment Variables
+# =========================================
+# ENVIRONMENT / CONFIG FILES
+# =========================================
 .env
-.env.local
-.env.production
+.env.*
+!.env.example         # Keep example env file
 
-# Database
+# =========================================
+# DATABASE FILES
+# =========================================
 *.db
 *.sqlite
 *.sqlite3
+data/
+db_backups/
 
-# IDE
+# =========================================
+# IDE / EDITOR SETTINGS
+# =========================================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 .DS_Store
+*.bak
 
-# Logs
+# =========================================
+# LOGS & TEMP FILES
+# =========================================
 *.log
 logs/
 celerybeat-schedule
 celerybeat.pid
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-
-# Docker
 *.pid
 *.seed
 *.pid.lock
-
-# Uploads
 uploads/
 documents/
 temp/
+tmp/
 
-# ChromeDriver
-chromedriver
-chromedriver.exe
+# =========================================
+# TESTING / COVERAGE
+# =========================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+nosetests.xml
+test-results.xml
 
-# Jupyter Notebooks
-.ipynb_checkpoints
+# =========================================
+# FRONTEND (Node / React / Next.js)
+# =========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.next/
+out/
+build/
+coverage/
+.cache/
+dist/
+public/static/
+*.map
 
-# Alembic
+# =========================================
+# DOCKER / DEPLOYMENT
+# =========================================
+*.pid
+*.seed
+*.pid.lock
+docker-data/
+docker-volumes/
+docker-compose.override.yml
+*.tar
+*.tgz
+
+# =========================================
+# JUPYTER NOTEBOOKS (if used for DS modules)
+# =========================================
+.ipynb_checkpoints/
+
+# =========================================
+# ALEMBIC MIGRATIONS
+# =========================================
 alembic/versions/*.pyc
+alembic/versions/__pycache__/
+alembic/versions/*.bak
+alembic/versions/*.tmp
+
+# =========================================
+# SECURITY / SENSITIVE FILES
+# =========================================
+*.pem
+*.key
+*.crt
+*.cert
+*.pfx
+*.csr
+*.der
+
+# =========================================
+# BACKUPS / OLD FILES
+# =========================================
+*.old
+*.orig
+*.rej
