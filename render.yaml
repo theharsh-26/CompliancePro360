@@ -53,7 +53,7 @@ envGroups:
 
 services:
   # 2. Managed PostgreSQL Database
-  - type: postgres
+  - type: psql # <-- CORRECTED (back to psql)
     name: compliance-pro-db
     plan: free
 
@@ -69,12 +69,12 @@ services:
     runtime: docker
     dockerfilePath: ./Dockerfile
     envGroups:
-      - name: compliance-pro-config # <-- Uses the config group
-      - name: compliance-pro-secrets # <-- Uses the secret group
+      - name: compliance-pro-config
+      - name: compliance-pro-secrets
     envVars:
       - key: DATABASE_URL
         fromService:
-          type: postgres
+          type: psql # <-- CORRECTED (back to psql)
           name: compliance-pro-db
           property: connectionString
       - key: REDIS_URL
@@ -102,12 +102,12 @@ services:
     # ▼▼▼ THIS IS STILL A GUESS - I NEED YOUR docker-compose.yml ▼▼▼
     dockerCommand: "celery -A app.tasks worker --loglevel=info"
     envGroups:
-      - name: compliance-pro-config # <-- Uses the config group
-      - name: compliance-pro-secrets # <-- Uses the secret group
+      - name: compliance-pro-config
+      - name: compliance-pro-secrets
     envVars:
       - key: DATABASE_URL
         fromService:
-          type: postgres
+          type: psql # <-- CORRECTED (back to psql)
           name: compliance-pro-db
           property: connectionString
       - key: REDIS_URL
