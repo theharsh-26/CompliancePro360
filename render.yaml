@@ -1,0 +1,65 @@
+services:
+  # 1. Managed PostgreSQL Database
+  - type: psql
+    name: compliance-pro-db
+    plan: free # Start with free, upgrade later
+
+  # 2. Managed Redis Instance (for Celery)
+  - type: redis
+    name: compliance-pro-redis
+    plan: free
+
+  # 3. The main FastAPI API
+  - type: web
+    name: compliance-pro-api
+    plan: free
+    runtime: docker
+    # We build from the Dockerfile in the repo
+    dockerfilePath: ./Dockerfile
+    # Set up environment variables
+    envVars:
+      - key: DATABASE_URL
+        # This special value automatically gets the connection string from the 'compliance-pro-db' service
+        fromService:
+          type: psql
+          name: compliance-pro-db
+          property: connectionString
+      - key: REDIS_URL
+        # This gets the connection string from the 'compliance-pro-redis' service
+        fromService:
+          type: redis
+          name: compliance-pro-redis
+          property: connectionString
+      # --- IMPORTANT ---
+      # You MUST add all other secrets (like API keys) from your .env.example
+      # in the Render Dashboard under the 'Environment' tab after you deploy.
+      # - key: OPENAI_API_KEY
+      #   value: your_secret_key_here
+      # - key: TWILIO_AUTH_TOKEN
+      #   value: your_secret_key_here
+
+  # 4. The Celery Background Worker
+  - type: worker
+    name: compliance-pro-worker
+    plan: free
+    runtime: docker
+    # It uses the SAME Dockerfile as the 'api' service
+    dockerfilePath: ./Dockerfile
+    # It just has a DIFFERENT start command
+    dockerCommand: "celery -A app.tasks worker --loglevel=info"
+    envVars:
+      # It needs the same database and redis connections
+      - key: DATABASE_URL
+        fromService:
+          type: psql
+          name: compliance-pro-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: compliance-pro-redis
+          property: connectionString
+      # --- IMPORTANT ---
+      # Also add all your other API key secrets here
+      # - key: OPENAI_API_KEY
+      #   value: your_secret_key_here
