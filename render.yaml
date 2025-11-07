@@ -1,4 +1,4 @@
-# CompliancePro360 render.yaml Blueprint
+# CompliancePro360 render.yaml Blueprint (v5 - Final)
 
 envGroups:
   # 1. Non-secret config shared by api and worker
@@ -31,33 +31,33 @@ envGroups:
       - key: LOG_LEVEL
         value: INFO
       - key: BACKUP_ENABLED
-        value: true
+        value: "true" # Quoted for safety
       - key: BACKUP_SCHEDULE
-        value: 0 2 * * *
+        value: "0 2 * * *" # Quoted for safety
       - key: BACKUP_RETENTION_DAYS
-        value: 30
+        value: "30" # Quoted for safety
       - key: RATE_LIMIT_ENABLED
-        value: true
+        value: "true" # Quoted for safety
       - key: CACHE_TTL
-        value: 3600
+        value: "3600" # Quoted for safety
       - key: MAX_UPLOAD_SIZE
         value: 100M
       - key: ENABLE_WHATSAPP_NOTIFICATIONS
-        value: true
+        value: "true" # Quoted for safety
       - key: ENABLE_AI_PREDICTIONS
-        value: true
+        value: "true" # Quoted for safety
       - key: ENABLE_WEB_SCRAPING
-        value: true
+        value: "true" # Quoted for safety
       - key: ENABLE_CLIENT_PORTAL
-        value: true
+        value: "true" # Quoted for safety
 
 services:
-  # 2. Managed PostgreSQL Database
-  - type: psql # <-- CORRECTED (back to psql)
+  # 2. Managed PostgreSQL Database (Correct Type)
+  - type: psql
     name: compliance-pro-db
     plan: free
 
-  # 3. Managed Redis Instance (for Celery)
+  # 3. Managed Redis Instance
   - type: redis
     name: compliance-pro-redis
     plan: free
@@ -70,25 +70,25 @@ services:
     dockerfilePath: ./Dockerfile
     envGroups:
       - name: compliance-pro-config
-      - name: compliance-pro-secrets
+      - name: compliance-pro-secrets # Your secrets group
     envVars:
       - key: DATABASE_URL
-        fromService:
-          type: psql # <-- CORRECTED (back to psql)
+        fromService: # (Correct Key)
+          type: psql
           name: compliance-pro-db
           property: connectionString
       - key: REDIS_URL
-        fromService:
+        fromService: # (Correct Key)
           type: redis
           name: compliance-pro-redis
           property: connectionString
       - key: CELERY_BROKER_URL
-        fromService:
+        fromService: # (Correct Key)
           type: redis
           name: compliance-pro-redis
           property: connectionString
       - key: CELERY_RESULT_BACKEND
-        fromService:
+        fromService: # (Correct Key)
           type: redis
           name: compliance-pro-redis
           property: connectionString
@@ -103,25 +103,25 @@ services:
     dockerCommand: "celery -A app.tasks worker --loglevel=info"
     envGroups:
       - name: compliance-pro-config
-      - name: compliance-pro-secrets
+      - name: compliance-pro-secrets # Your secrets group
     envVars:
       - key: DATABASE_URL
-        fromService:
-          type: psql # <-- CORRECTED (back to psql)
+        fromService: # (Correct Key)
+          type: psql
           name: compliance-pro-db
           property: connectionString
       - key: REDIS_URL
-        fromService:
+        fromService: # (Correct Key)
           type: redis
           name: compliance-pro-redis
           property: connectionString
       - key: CELERY_BROKER_URL
-        fromService:
+        fromService: # (Correct Key)
           type: redis
           name: compliance-pro-redis
           property: connectionString
       - key: CELERY_RESULT_BACKEND
-        fromService:
+        fromService: # (Correct Key)
           type: redis
           name: compliance-pro-redis
           property: connectionString
