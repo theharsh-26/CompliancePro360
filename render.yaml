@@ -1,57 +1,113 @@
-services:
-  # 1. Managed PostgreSQL Database
-  - type: psql
-    name: compliance-pro-db
-    plan: free # Start with free, upgrade later
+# CompliancePro360 render.yaml Blueprint
 
-  # 2. Managed Redis Instance (for Celery)
+envGroups:
+  # 1. Non-secret config shared by api and worker
+  - name: compliance-pro-config
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_NAME
+        value: CompliancePro360
+      - key: APP_VERSION
+        value: 2.0.0
+      - key: API_PORT
+        value: 8000
+      - key: FRONTEND_PORT
+        value: 5000
+      - key: HTTP_PORT
+        value: 80
+      - key: HTTPS_PORT
+        value: 443
+      - key: FLOWER_PORT
+        value: 5555
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 30
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: 7
+      - key: EMAIL_FROM_NAME
+        value: CompliancePro360
+      - key: LOG_LEVEL
+        value: INFO
+      - key: BACKUP_ENABLED
+        value: true
+      - key: BACKUP_SCHEDULE
+        value: 0 2 * * *
+      - key: BACKUP_RETENTION_DAYS
+        value: 30
+      - key: RATE_LIMIT_ENABLED
+        value: true
+      - key: CACHE_TTL
+        value: 3600
+      - key: MAX_UPLOAD_SIZE
+        value: 100M
+      - key: ENABLE_WHATSAPP_NOTIFICATIONS
+        value: true
+      - key: ENABLE_AI_PREDICTIONS
+        value: true
+      - key: ENABLE_WEB_SCRAPING
+        value: true
+      - key: ENABLE_CLIENT_PORTAL
+        value: true
+
+services:
+  # 2. Managed PostgreSQL Database
+  - type: postgres
+    name: compliance-pro-db
+    plan: free
+
+  # 3. Managed Redis Instance (for Celery)
   - type: redis
     name: compliance-pro-redis
     plan: free
 
-  # 3. The main FastAPI API
+  # 4. The main FastAPI API
   - type: web
     name: compliance-pro-api
     plan: free
     runtime: docker
-    # We build from the Dockerfile in the repo
     dockerfilePath: ./Dockerfile
-    # Set up environment variables
+    envGroups:
+      - name: compliance-pro-config # <-- Uses the config group
+      - name: compliance-pro-secrets # <-- Uses the secret group
     envVars:
       - key: DATABASE_URL
-        # This special value automatically gets the connection string from the 'compliance-pro-db' service
         fromService:
-          type: psql
+          type: postgres
           name: compliance-pro-db
           property: connectionString
       - key: REDIS_URL
-        # This gets the connection string from the 'compliance-pro-redis' service
         fromService:
           type: redis
           name: compliance-pro-redis
           property: connectionString
-      # --- IMPORTANT ---
-      # You MUST add all other secrets (like API keys) from your .env.example
-      # in the Render Dashboard under the 'Environment' tab after you deploy.
-      # - key: OPENAI_API_KEY
-      #   value: your_secret_key_here
-      # - key: TWILIO_AUTH_TOKEN
-      #   value: your_secret_key_here
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: redis
+          name: compliance-pro-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: redis
+          name: compliance-pro-redis
+          property: connectionString
 
-  # 4. The Celery Background Worker
+  # 5. The Celery Background Worker
   - type: worker
     name: compliance-pro-worker
     plan: free
     runtime: docker
-    # It uses the SAME Dockerfile as the 'api' service
     dockerfilePath: ./Dockerfile
-    # It just has a DIFFERENT start command
+    # ▼▼▼ THIS IS STILL A GUESS - I NEED YOUR docker-compose.yml ▼▼▼
     dockerCommand: "celery -A app.tasks worker --loglevel=info"
+    envGroups:
+      - name: compliance-pro-config # <-- Uses the config group
+      - name: compliance-pro-secrets # <-- Uses the secret group
     envVars:
-      # It needs the same database and redis connections
       - key: DATABASE_URL
         fromService:
-          type: psql
+          type: postgres
           name: compliance-pro-db
           property: connectionString
       - key: REDIS_URL
@@ -59,7 +115,13 @@ services:
           type: redis
           name: compliance-pro-redis
           property: connectionString
-      # --- IMPORTANT ---
-      # Also add all your other API key secrets here
-      # - key: OPENAI_API_KEY
-      #   value: your_secret_key_here
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: redis
+          name: compliance-pro-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: redis
+          name: compliance-pro-redis
+          property: connectionString
